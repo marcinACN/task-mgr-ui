@@ -51,7 +51,7 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks, onTaskUpdated, onBack
           <tbody>
             {tasks.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-6 py-12 text-center text-gray-400 text-xl font-semibold bg-gray-50">No tasks found.</td>
+                <td colSpan={5} className="px-6 py-12 text-center text-gray-400 text-xl font-semibold bg-gray-50">No tasks found.</td>
               </tr>
             ) : (
               tasks.map((task, idx) => (

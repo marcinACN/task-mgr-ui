@@ -35,11 +35,15 @@ const App: React.FC = () => {
     loadTasks();
   }, []);
 
+  // Split tasks into completed and not completed
+  const completedTasks = tasks.filter(t => t.status === 'COMPLETED');
+  const activeTasks = tasks.filter(t => t.status !== 'COMPLETED');
+
   return (
     <div className="min-h-screen bg-gray-50 p-0">
       <div className="max-w-4xl mx-auto pt-8 pl-6 pr-6 relative">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-left">Task Manager</h1>
+          <h1 className="text-3xl font-bold text-left">To Do:</h1>
           <button
             className="bg-blue-600 text-white rounded w-32 h-10 flex items-center justify-center text-base font-semibold shadow hover:bg-blue-700 transition"
             title="Add Task"
@@ -50,14 +54,23 @@ const App: React.FC = () => {
           </button>
         </div>
         {loading && <div className="text-left">Loading tasks...</div>}
-        {/* Error message is now shown in Snackbar */}
         <Snackbar message={error || ''} open={snackbarOpen} onClose={() => setSnackbarOpen(false)} type="error" />
         {!loading && !error && (
-          <TaskList
-            tasks={tasks}
-            onTaskUpdated={loadTasks}
-            onBackendError={handleBackendError}
-          />
+          <>
+            <TaskList
+              tasks={activeTasks}
+              onTaskUpdated={loadTasks}
+              onBackendError={handleBackendError}
+            />
+            <div className="mt-10">
+              <h2 className="text-2xl font-bold mb-4 text-left">Completed:</h2>
+              <TaskList
+                tasks={completedTasks}
+                onTaskUpdated={loadTasks}
+                onBackendError={handleBackendError}
+              />
+            </div>
+          </>
         )}
         {showForm && (
           <TaskForm
