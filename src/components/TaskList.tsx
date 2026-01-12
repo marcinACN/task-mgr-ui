@@ -6,6 +6,7 @@ import { EditTaskForm } from './EditTaskForm';
 interface TaskListProps {
   tasks: Task[];
   onTaskUpdated?: () => void;
+  onBackendError?: (msg: string) => void;
 }
 
 const statusColors: Record<string, string> = {
@@ -15,19 +16,20 @@ const statusColors: Record<string, string> = {
   COMPLETED: 'bg-green-100 text-green-800 ring-2 ring-green-200',
 };
 
-export const TaskList: React.FC<TaskListProps> = ({ tasks, onTaskUpdated }) => {
+export const TaskList: React.FC<TaskListProps> = ({ tasks, onTaskUpdated, onBackendError }) => {
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [editTask, setEditTask] = useState<Task | null>(null);
 
   const handleStatusChange = async (task: Task, newStatus: Task['status']) => {
     setUpdatingId(task.id);
     try {
-      // Send the full task object with updated status
       await updateTask(task.id, {
         ...task,
         status: newStatus,
       });
       if (onTaskUpdated) onTaskUpdated();
+    } catch (err: any) {
+      if (onBackendError) onBackendError(err.message);
     } finally {
       setUpdatingId(null);
     }
@@ -87,11 +89,16 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks, onTaskUpdated }) => {
           task={editTask}
           onClose={() => setEditTask(null)}
           onTaskUpdated={onTaskUpdated || (() => {})}
+          onBackendError={onBackendError}
           onDelete={async () => {
             if (!editTask) return;
-            await deleteTask(editTask.id);
-            setEditTask(null);
-            if (onTaskUpdated) onTaskUpdated();
+            try {
+              await deleteTask(editTask.id);
+              setEditTask(null);
+              if (onTaskUpdated) onTaskUpdated();
+            } catch (err: any) {
+              if (onBackendError) onBackendError(err.message);
+            }
           }}
         />
       )}

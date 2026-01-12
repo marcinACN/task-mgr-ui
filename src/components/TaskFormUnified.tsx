@@ -72,7 +72,7 @@ export const TaskFormUnified: React.FC<TaskFormProps> = ({
       <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-xl p-8 w-full max-w-md relative z-10">
         <button type="button" onClick={onClose} className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
         <h2 className="text-xl font-bold mb-4">{title}</h2>
-        {(error || localError) && <div className="text-red-500 mb-2">{error || localError}</div>}
+        {localError && <div className="text-red-500 mb-2">{localError}</div>}
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1" htmlFor="name">
             Name <span className="text-red-500">*</span>

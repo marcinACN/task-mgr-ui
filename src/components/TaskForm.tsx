@@ -6,21 +6,20 @@ import type { Task } from '../types';
 interface TaskFormProps {
   onTaskAdded: () => void;
   onClose: () => void;
+  onBackendError: (msg: string) => void;
 }
 
-export const TaskForm: React.FC<TaskFormProps> = ({ onTaskAdded, onClose }) => {
+export const TaskForm: React.FC<TaskFormProps> = ({ onTaskAdded, onClose, onBackendError }) => {
   const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
 
   const handleSubmit = async (data: Partial<Task>) => {
     setLoading(true);
-    setError(null);
     try {
       await createTask(data);
       onTaskAdded();
       onClose();
     } catch (err: any) {
-      setError(err.message);
+      onBackendError(err.message);
     } finally {
       setLoading(false);
     }
@@ -33,7 +32,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onTaskAdded, onClose }) => {
       onSubmit={handleSubmit}
       onClose={onClose}
       loading={loading}
-      error={error}
+      error={null}
       initial={{ status: 'OPEN', notes: '' }}
     />
   );

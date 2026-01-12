@@ -9,11 +9,11 @@ interface EditTaskFormProps {
   onClose: () => void;
   onTaskUpdated: () => void;
   onDelete: () => Promise<void>;
+  onBackendError?: (msg: string) => void;
 }
 
-export const EditTaskForm: React.FC<EditTaskFormProps> = ({ task, onClose, onTaskUpdated, onDelete }) => {
+export const EditTaskForm: React.FC<EditTaskFormProps> = ({ task, onClose, onTaskUpdated, onDelete, onBackendError }) => {
   const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
   const [changed, setChanged] = React.useState(false);
 
   const initial = {
@@ -26,13 +26,12 @@ export const EditTaskForm: React.FC<EditTaskFormProps> = ({ task, onClose, onTas
 
   const handleSubmit = async (data: Partial<Task>) => {
     setLoading(true);
-    setError(null);
     try {
       await updateTask(task.id, data);
       onTaskUpdated();
       onClose();
     } catch (err: any) {
-      setError(err.message);
+      if (onBackendError) onBackendError(err.message);
     } finally {
       setLoading(false);
     }
@@ -46,7 +45,7 @@ export const EditTaskForm: React.FC<EditTaskFormProps> = ({ task, onClose, onTas
       onSubmit={handleSubmit}
       onClose={onClose}
       loading={loading}
-      error={error}
+      error={null}
       disableSubmit={!changed}
       onDelete={onDelete}
       onChange={(data: Partial<Task>) => {
